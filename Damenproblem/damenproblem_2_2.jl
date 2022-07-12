@@ -1,49 +1,77 @@
-function restart()
-    global board = ones(Int8,22)
-    board[1:7] .= -20
-    board[16:22] .= -20
-    board[8:15]
-    fi = -7:-1
-    se = 1:7
-    global vec = vcat(fi,se)
+#functions
+function initialize(board_size)
+    global board = ones(Int8,3*board_size-2)
+    board[:] .= -5*board_size
+    for i = 1:board_size
+        board[board_size-1+i] = board_size+1-i
+    end
+    board[board_size] = board_size-1 #because i start with adding a 1
+    fi = 1-board_size:-1 #dont know how to do this better, the global vec is annoying
+    se = 1:board_size-1
+    global rang = vcat(fi,se)
     return nothing
 end
 
-function no_collision()
+function no_collision(board_size)
     isit = true
-    if length(unique(board[8:15])) < 8
+    if length(unique(board[board_size:2*board_size-1])) < board_size
         isit = false
     end
     #check for the diagonal
-    for i = 1:8
-        for j = vec
-            if board[i+7] == board[i+7+j]+j
+    for i = 1:board_size
+        for j = rang #-size+1:size-1 wthout 0
+            if board[i+board_size-1] == board[i+board_size-1+j]+j
                 isit = false
+                break
             end
         end
     end 
     return isit
 end
 
-function dostep()
-    ### do this next
+function dostep(board_size)
+    board[board_size] += 1
+    for i = 1:board_size-1
+        if board[i+board_size-1] == board_size+1
+            board[i+board_size-1] = 1
+            board[i+board_size] += 1
+        end
+    end
+    return nothing
 end
 
-function dowork()
-    restart()
+function dowork(board_size::Int)
+    #Limiting input range
+    board_size < 1 && error("Board size has to be at least 1.")
+    board_size > 9 && error("Choose smaller board size, calculation takes too long.")
+    #Initializing parameters
+    initialize(board_size)
     counter = 0
-    while count(==(8),board[8:15]) != 8
-
-        if no_collision()
-            count += 1
-            display(board[8:15])
+    iter = 0
+    #Loop while last board is not reached yet
+    while true
+        iter += 1
+        # if mod(iter,1) == 0
+        #     print(iter)
+        #     print(" ")
+        #     println(board[board_size:2board_size-1])
+        # end
+        dostep(board_size)
+        if board[2*board_size-1] >= board_size+1
+            println("there are ",counter," possible solutions to place ",board_size," queens on a ",board_size,"x",board_size," chessboard.")
+            break
+        end
+        #display(board[8:15])
+        if no_collision(board_size)
+            counter += 1
+            #display(board[board_size:2*board_size-1])
+            #println(counter)
         end
     end    
-    return counter
+    return nothing
 end
 
-dowork()
+#workarea
+@time dowork(4) #20 seconds for 7 - way more for bigger numbers
 
-restart()
-board[8:15]
-no_collision()
+
