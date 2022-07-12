@@ -6,12 +6,8 @@ function initialize(board_size)
         board[board_size-1+i] = board_size+1-i
     end
     board[board_size] = board_size-1 #because i start with adding a 1
-    fi = 1-board_size:-1 #dont know how to do this better, the global vec is annoying
-    se = 1:board_size-1
-    global rang = vcat(fi,se)
     return nothing
 end
-
 function no_collision(board_size)
     isit = true
     if length(unique(board[board_size:2*board_size-1])) < board_size
@@ -19,8 +15,17 @@ function no_collision(board_size)
     end
     #check for the diagonal
     for i = 1:board_size
-        for j = rang #-size+1:size-1 wthout 0
+        for j = 1:board_size-1 #rang #-size+1:size-1 wthout 0
             if board[i+board_size-1] == board[i+board_size-1+j]+j
+                isit = false
+                break
+            elseif board[i+board_size-1] == board[i+board_size-1-j]+j
+                isit = false
+                break
+            elseif board[i+board_size-1] == board[i+board_size-1+j]-j
+                isit = false
+                break
+            elseif board[i+board_size-1] == board[i+board_size-1-j]-j
                 isit = false
                 break
             end
@@ -28,7 +33,6 @@ function no_collision(board_size)
     end 
     return isit
 end
-
 function dostep(board_size)
     board[board_size] += 1
     for i = 1:board_size-1
@@ -39,7 +43,6 @@ function dostep(board_size)
     end
     return nothing
 end
-
 function dowork(board_size::Int)
     #Limiting input range
     board_size < 1 && error("Board size has to be at least 1.")
@@ -47,7 +50,7 @@ function dowork(board_size::Int)
     #Initializing parameters
     initialize(board_size)
     counter = 0
-    iter = 0
+    global iter = 0
     #Loop while last board is not reached yet
     while true
         iter += 1
@@ -64,7 +67,7 @@ function dowork(board_size::Int)
         #display(board[8:15])
         if no_collision(board_size)
             counter += 1
-            #display(board[board_size:2*board_size-1])
+            display(board[board_size:2*board_size-1])
             #println(counter)
         end
     end    
@@ -72,6 +75,4 @@ function dowork(board_size::Int)
 end
 
 #workarea
-@time dowork(4) #20 seconds for 7 - way more for bigger numbers
-
-
+@time dowork(8) #20 seconds for 7 - way more for bigger numbers
