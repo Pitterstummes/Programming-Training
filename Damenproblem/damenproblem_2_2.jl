@@ -67,7 +67,7 @@ function dowork(board_size::Int)
         #display(board[8:15])
         if no_collision(board_size)
             counter += 1
-            display(board[board_size:2*board_size-1])
+            #display(board[board_size:2*board_size-1])
             #println(counter)
         end
     end    
@@ -75,4 +75,4 @@ function dowork(board_size::Int)
 end
 
 #workarea
-@time dowork(8) #20 seconds for 7 - way more for bigger numbers
+@time dowork(6) #20 seconds for 7 - way more for bigger numbers
